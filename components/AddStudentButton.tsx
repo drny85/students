@@ -1,44 +1,45 @@
 'use client';
-import { useStudentsStore, useSubscription } from '@/context/store';
+import { useSubscription } from '@/context/store';
 import { Fields } from '@/data';
-import { auth, studentsCollection } from '@/firebase';
+import { studentsCollection } from '@/firebase';
 import { Student } from '@/types';
+import { useUser } from '@clerk/nextjs';
 import { Button, Dialog, Flex, Text, TextField } from '@radix-ui/themes';
 import { addDoc } from 'firebase/firestore';
 
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 const AddStudentButton = () => {
-   const user = auth.currentUser;
-   const router = useRouter();
+   const { user } = useUser();
+
    const [student, setStudent] = useState<Student>({
       name: '',
       lastName: '',
       fields: Fields,
-      userId: user?.uid!
+      userId: user?.id!
    });
    const isValid = student.name && student.lastName;
-   const studensTotal = useStudentsStore((s) => s.studentsTotal);
-   const hisSub = useSubscription((s) => s.subscription);
-   console.log(hisSub);
+
+   const sub = useSubscription((s) => s.subscription);
 
    const onSubmit = async () => {
-      if (studensTotal === 0) {
-         router.push('/subscriptions');
-      }
-      if (studensTotal >= 2) {
-         toast.error('You can only add two students');
-         router.push('/subscriptions');
+      if (!user || sub?.status !== 'active') {
+         toast.error('You must subscribe to use this feature');
          return;
       }
       try {
          await addDoc(studentsCollection, {
             ...student,
-            userId: user?.uid
+            userId: user?.id
          });
          toast.success('Student Added');
+         setStudent({
+            name: '',
+            lastName: '',
+            fields: Fields,
+            userId: user.id
+         });
       } catch (error) {
          console.log(error);
       }

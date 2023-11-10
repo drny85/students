@@ -22,11 +22,16 @@ const SubscriptionCard = ({ subscription }: Props) => {
 
    const handleSubscription = async () => {
       try {
+         if (!user) {
+            router.push('/students');
+            return;
+         }
+
          setLoading(true);
 
          const url = await getCheckoutUrl(subscription.priceId, user!);
          if (url) {
-            router.push(url);
+            window.location.assign(url);
          }
       } catch (error) {
          console.log(error);
@@ -57,6 +62,7 @@ const SubscriptionCard = ({ subscription }: Props) => {
                   variant="outline"
                   radius="full"
                   size={'3'}
+                  className="cursor-pointer"
                   onClick={handleSubscription}
                >
                   {loading ? (

@@ -29,6 +29,7 @@ export const getPremiumStatus = async (user: any) => {
             } else {
                console.log('Active or trialing subscription found');
                const data = snapshot.docs[0].data();
+               console.log('Subscription data', data.status);
                resolve(data as SubscriptionType);
             }
             unsubscribe();

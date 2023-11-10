@@ -1,6 +1,5 @@
 'use client';
-import { auth, db, getCustomerPortal } from '@/firebase';
-import { User } from '@clerk/nextjs/server';
+import { db, getCustomerPortal } from '@/firebase';
 import { addDoc, collection, onSnapshot } from 'firebase/firestore';
 
 export const getCheckoutUrl = async (
@@ -41,16 +40,17 @@ export const getCheckoutUrl = async (
    });
 };
 
-export const getPortalUrl = async (): Promise<string> => {
+export const getPortalUrl = async (user: any): Promise<string> => {
    let d: { url: string };
    try {
-      if (!auth.currentUser) throw new Error('User is not authenticated');
-      const userId = auth.currentUser.uid;
+      if (!user) throw new Error('User is not authenticated');
 
+      const userId = user.id;
       const { data } = await getCustomerPortal({
          customerId: userId,
-         returnUrl: window.location.origin
+         returnUrl: window.location.origin + '/subscriptions'
       });
+      console.log(data);
 
       // Add a type to the data
       d = data;

@@ -6,6 +6,7 @@ import { useSubscription } from './store';
 
 const SubscriptionProvider = ({ children }: PropsWithChildren) => {
    const { user } = useUser();
+
    const setSub = useSubscription((s) => s.setSubscription);
    useEffect(() => {
       if (!user) return;

@@ -1,6 +1,7 @@
 'use client';
 import { studentsCollection } from '@/firebase';
 import { useStudents } from '@/hooks/useStudents';
+import { Student } from '@/types';
 import { TrashIcon } from '@radix-ui/react-icons';
 import {
    AlertDialog,
@@ -12,18 +13,41 @@ import {
 } from '@radix-ui/themes';
 import { deleteDoc, doc } from 'firebase/firestore';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 const StudensTable = () => {
-   const { students, loading } = useStudents();
+   const { students: studs, loading } = useStudents();
+   const [students, setStudents] = useState<Student[]>([]);
+
+   const sortBy = (by: 'name' | 'lastName') => {
+      console.log(by);
+      if (by === 'name') {
+         //setStudents([]);
+         setStudents(students.sort((a, b) => (a.name > b.name ? 1 : -1)));
+      }
+      if (by === 'lastName')
+         setStudents(
+            students.sort((a, b) => (a.lastName > b.lastName ? 1 : -1))
+         );
+   };
 
    const onDelete = async (id: string) => {
       try {
          const docRef = doc(studentsCollection, id);
          await deleteDoc(docRef);
          toast.success('Student deleted successfully');
-      } catch (error) {}
+      } catch (error) {
+         console.log(error);
+         toast.error('Something went wrong');
+      }
    };
+   useEffect(() => {
+      if (loading) return;
+
+      setStudents(studs);
+   }, [studs, loading]);
+
    if (loading) return <Text>Loading...</Text>;
    if (students.length === 0)
       return (
@@ -31,13 +55,24 @@ const StudensTable = () => {
             <Text className="text-lg">No Students Added Yet</Text>
          </div>
       );
+
    return (
       <Container width={'100%'} className="mx-auto w-full">
          <Table.Root variant="surface" className="w-full">
             <Table.Header>
                <Table.Row>
-                  <Table.ColumnHeaderCell>First Name</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Last Name</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell
+                     className="cursor-pointer"
+                     onClick={() => sortBy('name')}
+                  >
+                     First Name
+                  </Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell
+                     className="cursor-pointer"
+                     onClick={() => sortBy('lastName')}
+                  >
+                     Last Name
+                  </Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell align="center">
                      Action
                   </Table.ColumnHeaderCell>
