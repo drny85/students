@@ -1,3 +1,4 @@
+import { DocumentData, DocumentReference, Timestamp } from 'firebase/firestore';
 import Stripe from 'stripe';
 
 export type Student = {
@@ -69,18 +70,16 @@ export interface SubscriptionType {
    /**
     * Firestore reference to the product doc for this Subscription.
     */
-   product: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>;
+   product: DocumentReference<DocumentData>;
    /**
     * Firestore reference to the price for this Subscription.
     */
-   price: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>;
+   price: DocumentReference<DocumentData>;
    /**
     * Array of price references. If you prvoide multiple recurring prices to the checkout session via the `line_items` parameter,
     * this array will hold the references for all recurring prices for this subscription. `price === prices[0]`.
     */
-   prices: Array<
-      FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
-   >;
+   prices: Array<DocumentReference<DocumentData>>;
    payment_method?: string;
    latest_invoice?: string;
    /**
@@ -102,33 +101,33 @@ export interface SubscriptionType {
    /**
     * Time at which the object was created.
     */
-   created: FirebaseFirestore.Timestamp;
+   created: Timestamp;
    /**
     * Start of the current period that the subscription has been invoiced for.
     */
-   current_period_start: FirebaseFirestore.Timestamp;
+   current_period_start: Timestamp;
    /**
     * End of the current period that the subscription has been invoiced for. At the end of this period, a new invoice will be created.
     */
-   current_period_end: FirebaseFirestore.Timestamp;
+   current_period_end: Timestamp;
    /**
     * If the subscription has ended, the timestamp of the date the subscription ended.
     */
-   ended_at: FirebaseFirestore.Timestamp | null;
+   ended_at: Timestamp | null;
    /**
     * A date in the future at which the subscription will automatically get canceled.
     */
-   cancel_at: FirebaseFirestore.Timestamp | null;
+   cancel_at: Timestamp | null;
    /**
     * If the subscription has been canceled, the date of that cancellation. If the subscription was canceled with `cancel_at_period_end`, `canceled_at` will still reflect the date of the initial cancellation request, not the end of the subscription period when the subscription is automatically moved to a canceled state.
     */
-   canceled_at: FirebaseFirestore.Timestamp | null;
+   canceled_at: Timestamp | null;
    /**
     * If the subscription has a trial, the beginning of that trial.
     */
-   trial_start: FirebaseFirestore.Timestamp | null;
+   trial_start: Timestamp | null;
    /**
     * If the subscription has a trial, the end of that trial.
     */
-   trial_end: FirebaseFirestore.Timestamp | null;
+   trial_end: Timestamp | null;
 }
